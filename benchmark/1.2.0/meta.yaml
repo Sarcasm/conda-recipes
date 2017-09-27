@@ -1,0 +1,31 @@
+{% set version = "1.2.0" %}
+{% set sha256 = "3dcc90c158838e2ac4a7ad06af9e28eb5877cf28252a81e55eb3c836757d3070" %}
+
+package:
+  name: benchmark
+  version: {{ version }}
+
+source:
+  fn: benchmark-1.2.0.tar.gz
+  url: https://github.com/google/benchmark/archive/v1.2.0.tar.gz
+  sha256: {{ sha256 }}
+
+build:
+  number: 0
+
+test:
+  commands:
+    - test -f $PREFIX/include/benchmark/benchmark.h           # [unix]
+
+about:
+  home: https://github.com/google/benchmark
+  license: Apache License 2.0
+  license_file: LICENSE
+  summary: A microbenchmark support library
+  description: |
+    A library to support the benchmarking of functions,
+    similar to unit-tests.
+
+extra:
+  recipe-maintainers:
+    - Sarcasm
