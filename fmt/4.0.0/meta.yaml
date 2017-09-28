@@ -15,12 +15,15 @@ source:
     - 0002-Fix-a-segfault-in-test-on-glibc-2.26-551-take-2.patch
 
 build:
-  number: 0
+  number: 1
 
 test:
   commands:
-    - test -f ${PREFIX}/lib/libfmt.a                    # [unix]
     - test -d ${PREFIX}/include/fmt                     # [unix]
+    - test -f ${PREFIX}/lib/libfmt.so                   # [linux]
+    - test -f ${PREFIX}/lib/libfmt.dylib                # [osx]
+    - conda inspect linkages -p $PREFIX fmt             # [unix]
+    - conda inspect objects -p $PREFIX fmt              # [osx]
 
 about:
   home: http://fmtlib.net
