@@ -1,7 +1,7 @@
 {% set version = "1.8.0" %}
 
 package:
-  name: gtest
+  name: gmock
   version: {{ version }}
 
 requirements:
@@ -9,21 +9,21 @@ requirements:
     - googletest-gmock-build {{ version }}
 
 build:
-  number: 1
+  number: 0
   always_include_files:
-    - include/gtest
-    - lib/libgtest*
+    - include/gmock
+    - lib/libgmock*
 
 test:
   commands:
-    - test -f $PREFIX/include/gtest/gtest.h           # [unix]
+    - test -f $PREFIX/include/gmock/gmock.h           # [unix]
 
 about:
   home: https://github.com/google/googletest
   license: BSD 3-Clause
   license_family: BSD
-  license_url: https://raw.githubusercontent.com/google/googletest/release-1.8.0/googletest/LICENSE
-  summary: Google's C++ test framework
+  license_url: https://raw.githubusercontent.com/google/googletest/release-1.8.0/googlemock/LICENSE
+  summary: Google C++ mocking framework
 
 extra:
   recipe-maintainers:
