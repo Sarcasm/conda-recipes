@@ -17,6 +17,13 @@ source:
 build:
   number: 1
 
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+    - ninja
+
 test:
   commands:
     - test -d ${PREFIX}/include/fmt                     # [unix]

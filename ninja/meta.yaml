@@ -1,0 +1,16 @@
+package:
+  name: ninja
+  version: 1.8.2
+
+source:
+  url: https://github.com/ninja-build/ninja/releases/download/v1.8.2/ninja-linux.zip
+  sha256: d2fea9ff33b3ef353161ed906f260d565ca55b8ca0568fa07b1d2cab90a84a07
+
+test:
+  commands:
+    - ninja --version
+
+about:
+  home: https://ninja-build.org/
+  license:  Apache-2.0
+  summary: Ninja is a small build system with a focus on speed
