@@ -1,5 +1,5 @@
-{% set version = "4.0.0" %}
-{% set sha256 = "10a9f184d4d66f135093a08396d3b0a0ebe8d97b79f8b3ddb8559f75fe4fcbc3" %}
+{% set version = "4.1.0" %}
+{% set sha256 = "9d49bf02ceb9d0eec51144b203b63b77e69d3798bb402fb82e7d0bdb06c79eeb" %}
 
 package:
   name: fmt
@@ -7,30 +7,24 @@ package:
 
 source:
   fn: fmt-{{ version }}.zip
-  url: https://github.com/fmtlib/fmt/releases/download/4.0.0/fmt-{{ version }}.zip
+  url: https://github.com/fmtlib/fmt/releases/download/{{ version }}/fmt-{{ version }}.zip
   sha256: {{ sha256 }}
-  # fix an issue with `make test` during build
-  patches:
-    - 0001-Fix-a-segfault-in-test-on-glibc-2.26-551.patch
-    - 0002-Fix-a-segfault-in-test-on-glibc-2.26-551-take-2.patch
 
 build:
-  number: 2
+  number: 0
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - cmake 3.1
+    - cmake >=3.1
     - ninja
 
 test:
   commands:
     - test -d ${PREFIX}/include/fmt                     # [unix]
     - test -f ${PREFIX}/lib/libfmt.so                   # [linux]
-    - test -f ${PREFIX}/lib/libfmt.dylib                # [osx]
     - conda inspect linkages -p $PREFIX fmt             # [unix]
-    - conda inspect objects -p $PREFIX fmt              # [osx]
 
 about:
   home: http://fmtlib.net
