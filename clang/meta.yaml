@@ -15,7 +15,7 @@ source:
     folder: tools/clang/tools/extra
 
 build:
-  number: 0
+  number: 1
 
 requirements:
   build:
@@ -29,10 +29,18 @@ outputs:
   - name: clang-format
     files:
       - bin/clang-format
+    requirements:
+      build:
+        - {{ compiler('c') }}
+        - {{ compiler('cxx') }}
     test:
       script: run_test_clang-format.sh
   - name: clang-tidy
     files:
       - bin/clang-tidy
+    requirements:
+      build:
+        - {{ compiler('c') }}
+        - {{ compiler('cxx') }}
     test:
       script: run_test_clang-tidy.sh
