@@ -3,7 +3,7 @@
 set -o errexit
 
 mkdir build
-cd build
+pushd build
 
 cmake -G Ninja \
       -DCMAKE_BUILD_TYPE=Release \
@@ -14,8 +14,14 @@ cmake -G Ninja \
       -DLLVM_PARALLEL_COMPILE_JOBS=6 \
       ..
 
-# ninja ${VERBOSE_NINJA} install
-ninja clang-{format,tidy}
+ninja ${VERBOSE_NINJA} clang-{format,tidy} include-what-you-use
 
 mkdir -p ${PREFIX}/bin
-cp bin/clang-{format,tidy} ${PREFIX}/bin
+cp bin/clang-{format,tidy} bin/include-what-you-use ${PREFIX}/bin
+popd
+
+pushd tools/clang/tools/include-what-you-use
+cp fix_includes.py iwyu_tool.py ${PREFIX}/bin
+mkdir -p ${PREFIX}/share/include-what-you-use
+cp *.imp ${PREFIX}/share/include-what-you-use
+popd

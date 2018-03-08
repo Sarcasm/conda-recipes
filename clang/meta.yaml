@@ -10,12 +10,19 @@ source:
   - url: http://releases.llvm.org/{{ version }}/cfe-{{ version }}.src.tar.xz
     sha256: 135f6c9b0cd2da1aff2250e065946258eb699777888df39ca5a5b4fe5e23d0ff
     folder: tools/clang
+    patches:
+      - 0001-CMake-add-include-what-you-use-subdirectory-to-tools.patch
   - url: http://releases.llvm.org/{{ version }}/clang-tools-extra-{{ version }}.src.tar.xz
     sha256: 9aada1f9d673226846c3399d13fab6bba4bfd38bcfe8def5ee7b0ec24f8cd225
     folder: tools/clang/tools/extra
+  - url: https://github.com/include-what-you-use/include-what-you-use/archive/clang_5.0.tar.gz
+    sha256: a9ec29f9a2127816facabe3fab1d72dc5b5326ebe5013f2223b56565f3783828
+    folder: tools/clang/tools/include-what-you-use
+    patches:
+      - 0002-CMake-remove-extra-dependencies-curses-backatrace-z-.patch
 
 build:
-  number: 1
+  number: 2
 
 requirements:
   build:
@@ -44,3 +51,15 @@ outputs:
         - {{ compiler('cxx') }}
     test:
       script: run_test_clang-tidy.sh
+  - name: include-what-you-use
+    files:
+      - bin/fix_includes.py
+      - bin/include-what-you-use
+      - bin/iwyu_tool.py
+      - share/include-what-you-use/
+    requirements:
+      build:
+        - {{ compiler('c') }}
+        - {{ compiler('cxx') }}
+    test:
+      script: run_test_include-what-you-use.sh
