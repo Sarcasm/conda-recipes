@@ -1,4 +1,5 @@
 {% set version="5.0.1" %}
+{% set iwyu_version="0.9" %}
 
 package:
   name: clang-suite
@@ -30,6 +31,9 @@ requirements:
     - {{ compiler('cxx') }}
     - cmake >=3.4.3
     - ninja
+    - python
+    - pkg-config                # [unix]
+  host:
     - libedit                   # [unix]
 
 outputs:
@@ -52,6 +56,7 @@ outputs:
     test:
       script: run_test_clang-tidy.sh
   - name: include-what-you-use
+    version: {{ iwyu_version }}
     files:
       - bin/fix_includes.py
       - bin/include-what-you-use
@@ -61,5 +66,7 @@ outputs:
       build:
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
+      run:
+        - python
     test:
       script: run_test_include-what-you-use.sh
