@@ -74,4 +74,7 @@ _cmake_config+=(
 
 cmake -G Ninja "${_cmake_config_defaults[@]}" "${_cmake_config[@]}" ..
 
-ninja ${VERBOSE_NINJA--v} install
+# use ${VERBOSE_NINJA-} instead of just ${VERBOSE_NINJA},
+# which expands to VERBOSE_NINJA or the empty string if no set,
+# because script uses 'set -o nounset'
+ninja ${VERBOSE_NINJA-} install

@@ -1,3 +1,9 @@
-# https://github.com/conda-forge/geos-feedstock/pull/25/files#r135541701
+ninja:
+  - 1.8.2
+
+# Log everything by default,
+# but allow to disable without changing the recipe,
+# if large log sizes is an issue on CI.
+# See https://github.com/conda-forge/geos-feedstock/pull/25/files#r135541701
 VERBOSE_NINJA:
   - -v

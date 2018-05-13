@@ -56,10 +56,9 @@ _cmake_config_defaults=(
     -DBUILD_SHARED_LIBS=OFF
 )
 
-env
-
 cmake -G Ninja "${_cmake_config_defaults[@]}" ..
 
-ninja ${VERBOSE_NINJA--v} install
-
-readelf -d ${PREFIX}/bin/include-what-you-use | head -20
+# use ${VERBOSE_NINJA-} instead of just ${VERBOSE_NINJA},
+# which expands to VERBOSE_NINJA or the empty string if no set,
+# because script uses 'set -o nounset'
+ninja ${VERBOSE_NINJA-} install
