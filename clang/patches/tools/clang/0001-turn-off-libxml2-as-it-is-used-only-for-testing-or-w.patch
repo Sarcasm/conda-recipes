@@ -1,0 +1,31 @@
+From 180ce105ccdd229bb1e6cdc0606ffde39c34a3cf Mon Sep 17 00:00:00 2001
+From: Guillaume Papin <guillaume.papin@epitech.eu>
+Date: Mon, 30 Apr 2018 01:54:05 +0200
+Subject: [PATCH] turn off libxml2 as it is used only for testing or windows
+ code
+
+Only the following files seems to use libxml:
+- tools/clang/tools/c-index-test/c-index-test.c
+- lib/WindowsManifest/WindowsManifestMerger.cpp
+---
+ CMakeLists.txt | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 2eee8e6..d2d401f 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -188,10 +188,6 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
+ # code may call MSan interceptors like strlen, leading to false positives.
+ if(NOT LLVM_USE_SANITIZER MATCHES "Memory.*")
+   set (LIBXML2_FOUND 0)
+-  find_package(LibXml2 2.5.3 QUIET)
+-  if (LIBXML2_FOUND)
+-    set(CLANG_HAVE_LIBXML 1)
+-  endif()
+ endif()
+ 
+ include(CheckIncludeFile)
+-- 
+2.10.0
+

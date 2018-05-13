@@ -1,0 +1,119 @@
+From 3f48c10e226035c93523036e02646a935cfb309b Mon Sep 17 00:00:00 2001
+From: Guillaume Papin <guillaume.papin@epitech.eu>
+Date: Thu, 3 May 2018 00:20:17 +0200
+Subject: [PATCH 6/7] force libedit
+
+By creating a Findlibedit.cmake,
+CMake will find libedit automatically in the CMAKE_PREFIX_PATH.
+---
+ cmake/config-ix.cmake             |  6 +++---
+ cmake/modules/Findlibedit.cmake   | 26 ++++++++++++++++++++++++++
+ cmake/modules/LLVMConfig.cmake.in | 14 ++++++++++----
+ lib/LineEditor/CMakeLists.txt     |  7 ++++++-
+ 4 files changed, 45 insertions(+), 8 deletions(-)
+ create mode 100644 cmake/modules/Findlibedit.cmake
+
+diff --git a/cmake/config-ix.cmake b/cmake/config-ix.cmake
+index e916405..c610333 100644
+--- a/cmake/config-ix.cmake
++++ b/cmake/config-ix.cmake
+@@ -77,7 +77,6 @@ check_symbol_exists(FE_ALL_EXCEPT "fenv.h" HAVE_DECL_FE_ALL_EXCEPT)
+ check_symbol_exists(FE_INEXACT "fenv.h" HAVE_DECL_FE_INEXACT)
+ 
+ check_include_file(mach/mach.h HAVE_MACH_MACH_H)
+-check_include_file(histedit.h HAVE_HISTEDIT_H)
+ check_include_file(CrashReporterClient.h HAVE_CRASHREPORTERCLIENT_H)
+ if(APPLE)
+   include(CheckCSourceCompiles)
+@@ -146,8 +145,9 @@ if(NOT LLVM_USE_SANITIZER MATCHES "Memory.*")
+   # Don't look for these libraries on Windows.
+   if (NOT PURE_WINDOWS)
+     # Skip libedit if using ASan as it contains memory leaks.
+-    if (LLVM_ENABLE_LIBEDIT AND HAVE_HISTEDIT_H AND NOT LLVM_USE_SANITIZER MATCHES ".*Address.*")
+-      check_library_exists(edit el_init "" HAVE_LIBEDIT)
++    if (LLVM_ENABLE_LIBEDIT AND NOT LLVM_USE_SANITIZER MATCHES ".*Address.*")
++      find_package(libedit REQUIRED)
++      set(HAVE_LIBEDIT 1)
+     else()
+       set(HAVE_LIBEDIT 0)
+     endif()
+diff --git a/cmake/modules/Findlibedit.cmake b/cmake/modules/Findlibedit.cmake
+new file mode 100644
+index 0000000..ae9f6f9
+--- /dev/null
++++ b/cmake/modules/Findlibedit.cmake
+@@ -0,0 +1,26 @@
++# Find libedit.
++#
++# This module defines the following variable:
++# LIBEDIT_FOUND - true if libedit has been found and can be used
++#
++# This module defines the following IMPORTED target:
++# - libedit::libedit
++
++find_path(LIBEDIT_INCLUDE_DIR histedit.h)
++find_library(LIBEDIT_LIBRARY edit)
++
++include(FindPackageHandleStandardArgs)
++find_package_handle_standard_args(libedit DEFAULT_MSG
++  LIBEDIT_LIBRARY
++  LIBEDIT_INCLUDE_DIR
++)
++mark_as_advanced(LIBEDIT_LIBRARY LIBEDIT_INCLUDE_DIR)
++
++if (LIBEDIT_FOUND AND NOT TARGET libedit::libedit)
++  add_library(libedit::libedit UNKNOWN IMPORTED)
++  set_target_properties(libedit::libedit PROPERTIES
++    IMPORTED_LINK_INTERFACE_LANGUAGES "CXX"
++    IMPORTED_LOCATION "${LIBEDIT_LIBRARY}"
++    INTERFACE_INCLUDE_DIRECTORIES "${LIBEDIT_INCLUDE_DIR}"
++  )
++endif()
+diff --git a/cmake/modules/LLVMConfig.cmake.in b/cmake/modules/LLVMConfig.cmake.in
+index 1769ede..5880e4a 100644
+--- a/cmake/modules/LLVMConfig.cmake.in
++++ b/cmake/modules/LLVMConfig.cmake.in
+@@ -77,14 +77,20 @@ set(LLVM_TOOLS_BINARY_DIR "@LLVM_CONFIG_TOOLS_BINARY_DIR@")
+ set(LLVM_TOOLS_INSTALL_DIR "@LLVM_TOOLS_INSTALL_DIR@")
+ set(LLVM_HAVE_OPT_VIEWER_MODULES @LLVM_HAVE_OPT_VIEWER_MODULES@)
+ 
++# temporarily add this directory to CMAKE_MODULE_PATH,
++# so that find_dependency works
++list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_CURRENT_LIST_DIR}")
++
+ if (@LLVM_ENABLE_TERMINFO@)
+-  # temporarily add this directory to CMAKE_MODULE_PATH,
+-  # so that find_dependency works
+-  list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_CURRENT_LIST_DIR}")
+   find_dependency(Tinfo)
+-  list(REMOVE_AT CMAKE_MODULE_PATH 0)
+ endif()
+ 
++if (@LLVM_ENABLE_LIBEDIT@)
++  find_dependency(libedit)
++endif()
++
++list(REMOVE_AT CMAKE_MODULE_PATH 0)
++
+ if(NOT TARGET LLVMSupport)
+   set(LLVM_EXPORTED_TARGETS "@LLVM_CONFIG_EXPORTS@")
+   include("@LLVM_CONFIG_EXPORTS_FILE@")
+diff --git a/lib/LineEditor/CMakeLists.txt b/lib/LineEditor/CMakeLists.txt
+index 0d2bada..a8232ea 100644
+--- a/lib/LineEditor/CMakeLists.txt
++++ b/lib/LineEditor/CMakeLists.txt
+@@ -1,5 +1,10 @@
++# prepend PRIVATE to the library,
++# because add_llvm_library() handle LINK_LIBS particularly,
++# when LLVMLineEditor is a static library,
++# LINK_LIBS uses INTERFACE by default,
++# I don't know why it does this instead of PUBLIC
+ if(HAVE_LIBEDIT)
+-  set(link_libs edit)
++  set(link_libs PRIVATE libedit::libedit)
+ endif()
+ 
+ add_llvm_library(LLVMLineEditor
+-- 
+2.10.0
+

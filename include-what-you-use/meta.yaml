@@ -1,0 +1,36 @@
+{% set version="0.10" %}
+
+package:
+  name: include-what-you-use
+  version: {{ version }}
+
+source:
+  - url: https://github.com/include-what-you-use/include-what-you-use/archive/clang_6.0.tar.gz
+    sha256: 720275b2742462004c8b2b2317571569cec8d084f6e8eda745c99043b63d7175
+    patches:
+      - 0001-CMake-use-LLVMConfig.cmake-and-LLVM-Clang-targets-di.patch
+      - 0002-remove-Git-revision-checks.patch
+
+build:
+  number: 1
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake >=3.4.3
+    - ninja
+  host:
+    - clang 6
+  run:
+    - python
+    # depends on Clang resource directory which is something like:
+    #     $prefix/lib/clang/6.0.0
+    - {{ pin_compatible('clang', min_pin='x.x.x', max_pin='x.x.x') }}
+
+test:
+  commands:
+    - conda inspect linkages -p $PREFIX include-what-you-use # [unix]
+    - ${PREFIX}/bin/include-what-you-use --version           # [unix]
+    - test -f ${PREFIX}/bin/fix_includes.py
+    - test -f ${PREFIX}/bin/iwyu_tool.py

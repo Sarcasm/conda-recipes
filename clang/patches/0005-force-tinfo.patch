@@ -1,0 +1,96 @@
+From 6cb25db6306fb66f5fdecefdb9fe7449111fca89 Mon Sep 17 00:00:00 2001
+From: Guillaume Papin <guillaume.papin@epitech.eu>
+Date: Mon, 30 Apr 2018 21:09:53 +0200
+Subject: [PATCH 5/7] force tinfo
+
+The detection logic for terminfo produces non absolute libraries, e.g. -ltinfo,
+instead use a find_package() to be sure to get the libtinfo from conda env.
+---
+ cmake/config-ix.cmake             | 13 +++----------
+ cmake/modules/FindTinfo.cmake     | 24 ++++++++++++++++++++++++
+ cmake/modules/LLVMConfig.cmake.in |  9 +++++++++
+ 3 files changed, 36 insertions(+), 10 deletions(-)
+ create mode 100644 cmake/modules/FindTinfo.cmake
+
+diff --git a/cmake/config-ix.cmake b/cmake/config-ix.cmake
+index bc30c95..e916405 100644
+--- a/cmake/config-ix.cmake
++++ b/cmake/config-ix.cmake
+@@ -152,16 +152,9 @@ if(NOT LLVM_USE_SANITIZER MATCHES "Memory.*")
+       set(HAVE_LIBEDIT 0)
+     endif()
+     if(LLVM_ENABLE_TERMINFO)
+-      set(HAVE_TERMINFO 0)
+-      foreach(library tinfo terminfo curses ncurses ncursesw)
+-        string(TOUPPER ${library} library_suffix)
+-        check_library_exists(${library} setupterm "" HAVE_TERMINFO_${library_suffix})
+-        if(HAVE_TERMINFO_${library_suffix})
+-          set(HAVE_TERMINFO 1)
+-          set(TERMINFO_LIBS "${library}")
+-          break()
+-        endif()
+-      endforeach()
++      find_package(Tinfo REQUIRED)
++      set(HAVE_TERMINFO 1)
++      set(TERMINFO_LIBS Tinfo::Tinfo)
+     else()
+       set(HAVE_TERMINFO 0)
+     endif()
+diff --git a/cmake/modules/FindTinfo.cmake b/cmake/modules/FindTinfo.cmake
+new file mode 100644
+index 0000000..d3f2964
+--- /dev/null
++++ b/cmake/modules/FindTinfo.cmake
+@@ -0,0 +1,24 @@
++# Find the Tinfo library
++#
++# This module defines the following variable:
++# TINFO_FOUND - true if Tinfo has been found and can be used
++#
++# This module defines the following IMPORTED target:
++# - Tinfo::Tinfo
++#
++# Note: the include directory is not found nor exported,
++# because LLVM does not need it.
++
++find_library(TINFO_LIBRARY tinfo)
++
++include(FindPackageHandleStandardArgs)
++find_package_handle_standard_args(Tinfo DEFAULT_MSG TINFO_LIBRARY)
++mark_as_advanced(TINFO_LIBRARY)
++
++if (TINFO_FOUND AND NOT TARGET Tinfo::Tinfo)
++  add_library(Tinfo::Tinfo UNKNOWN IMPORTED)
++  set_target_properties(Tinfo::Tinfo PROPERTIES
++    IMPORTED_LINK_INTERFACE_LANGUAGES "C"
++    IMPORTED_LOCATION "${TINFO_LIBRARY}"
++  )
++endif()
+diff --git a/cmake/modules/LLVMConfig.cmake.in b/cmake/modules/LLVMConfig.cmake.in
+index fe4df52..1769ede 100644
+--- a/cmake/modules/LLVMConfig.cmake.in
++++ b/cmake/modules/LLVMConfig.cmake.in
+@@ -1,4 +1,5 @@
+ # This file provides information and services to the final user.
++include(CMakeFindDependencyMacro)
+ 
+ @LLVM_CONFIG_CODE@
+ 
+@@ -76,6 +77,14 @@ set(LLVM_TOOLS_BINARY_DIR "@LLVM_CONFIG_TOOLS_BINARY_DIR@")
+ set(LLVM_TOOLS_INSTALL_DIR "@LLVM_TOOLS_INSTALL_DIR@")
+ set(LLVM_HAVE_OPT_VIEWER_MODULES @LLVM_HAVE_OPT_VIEWER_MODULES@)
+ 
++if (@LLVM_ENABLE_TERMINFO@)
++  # temporarily add this directory to CMAKE_MODULE_PATH,
++  # so that find_dependency works
++  list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_CURRENT_LIST_DIR}")
++  find_dependency(Tinfo)
++  list(REMOVE_AT CMAKE_MODULE_PATH 0)
++endif()
++
+ if(NOT TARGET LLVMSupport)
+   set(LLVM_EXPORTED_TARGETS "@LLVM_CONFIG_EXPORTS@")
+   include("@LLVM_CONFIG_EXPORTS_FILE@")
+-- 
+2.10.0
+

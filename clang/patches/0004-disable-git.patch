@@ -1,0 +1,62 @@
+From 64074bfde2032db0f462de9199ad571cc27202be Mon Sep 17 00:00:00 2001
+From: Guillaume Papin <guillaume.papin@epitech.eu>
+Date: Mon, 30 Apr 2018 01:50:23 +0200
+Subject: [PATCH 4/7] disable git
+
+---
+ cmake/modules/AddLLVM.cmake        | 2 +-
+ cmake/modules/GetSVN.cmake         | 4 ++--
+ cmake/modules/VersionFromVCS.cmake | 2 +-
+ 3 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/cmake/modules/AddLLVM.cmake b/cmake/modules/AddLLVM.cmake
+index fd5627e..ceff051 100644
+--- a/cmake/modules/AddLLVM.cmake
++++ b/cmake/modules/AddLLVM.cmake
+@@ -1631,7 +1631,7 @@ function(find_first_existing_file out_var)
+ endfunction()
+ 
+ macro(find_first_existing_vc_file out_var path)
+-    find_program(git_executable NAMES git git.exe git.cmd)
++    set(git_executable git_executable-NOTFOUND)
+     # Run from a subdirectory to force git to print an absolute path.
+     execute_process(COMMAND ${git_executable} rev-parse --git-dir
+       WORKING_DIRECTORY ${path}/cmake
+diff --git a/cmake/modules/GetSVN.cmake b/cmake/modules/GetSVN.cmake
+index f729395..a7f0730 100644
+--- a/cmake/modules/GetSVN.cmake
++++ b/cmake/modules/GetSVN.cmake
+@@ -39,7 +39,7 @@ macro(get_source_info_svn path revision repository)
+ endmacro()
+ 
+ macro(get_source_info_git_svn path revision repository)
+-  find_program(git_executable NAMES git git.exe git.cmd)
++  set(git_executable git_executable-NOTFOUND)
+   if (git_executable)
+     execute_process(COMMAND ${git_executable} svn info
+       WORKING_DIRECTORY ${path}
+@@ -58,7 +58,7 @@ macro(get_source_info_git_svn path revision repository)
+ endmacro()
+ 
+ macro(get_source_info_git path revision repository)
+-  find_program(git_executable NAMES git git.exe git.cmd)
++  set(git_executable git_executable-NOTFOUND)
+   if (git_executable)
+     execute_process(COMMAND ${git_executable} log -1 --pretty=format:%H
+       WORKING_DIRECTORY ${path}
+diff --git a/cmake/modules/VersionFromVCS.cmake b/cmake/modules/VersionFromVCS.cmake
+index 552fe77..965f7c6 100644
+--- a/cmake/modules/VersionFromVCS.cmake
++++ b/cmake/modules/VersionFromVCS.cmake
+@@ -26,7 +26,7 @@ function(add_version_info_from_vcs VERS)
+       endif()
+     endif()
+   else()
+-    find_program(git_executable NAMES git git.exe git.cmd)
++    set(git_executable git_executable-NOTFOUND)
+ 
+     if( git_executable )
+       # Run from a subdirectory to force git to print an absoute path.
+-- 
+2.10.0
+

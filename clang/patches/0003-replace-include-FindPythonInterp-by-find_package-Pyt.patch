@@ -1,0 +1,36 @@
+From 3399bdb6dba6c801e527d03d970c912927305750 Mon Sep 17 00:00:00 2001
+From: Guillaume Papin <guillaume.papin@epitech.eu>
+Date: Mon, 30 Apr 2018 01:50:14 +0200
+Subject: [PATCH 3/7] replace `include(FindPythonInterp)' by
+ `find_package(PythonInterp)'
+
+The latter honors CMAKE_PREFIX_PATH,
+which mean we can just specify -DCMAKE_PREFIX_PATH=$CONDA_PREFIX,
+to get the version of python configured in the conda environment.
+---
+ CMakeLists.txt | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 2bf2c21..59a4e5b 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -594,14 +594,7 @@ include(HandleLLVMOptions)
+ # Verify that we can find a Python 2 interpreter.  Python 3 is unsupported.
+ # FIXME: We should support systems with only Python 3, but that requires work
+ # on LLDB.
+-set(Python_ADDITIONAL_VERSIONS 2.7)
+-include(FindPythonInterp)
+-if( NOT PYTHONINTERP_FOUND )
+-  message(FATAL_ERROR
+-"Unable to find Python interpreter, required for builds and testing.
+-
+-Please install Python or specify the PYTHON_EXECUTABLE CMake variable.")
+-endif()
++find_package(PythonInterp REQUIRED)
+ 
+ if( ${PYTHON_VERSION_STRING} VERSION_LESS 2.7 )
+   message(FATAL_ERROR "Python 2.7 or newer is required")
+-- 
+2.10.0
+

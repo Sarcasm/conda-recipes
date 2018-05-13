@@ -1,0 +1,75 @@
+From b344d1b951b4d56fe5e93f4607aa84a7cba1eb7e Mon Sep 17 00:00:00 2001
+From: Guillaume Papin <guillaume.papin@epitech.eu>
+Date: Mon, 30 Apr 2018 01:47:51 +0200
+Subject: [PATCH 2/7] disable Ocaml and Go bindings
+
+---
+ cmake/config-ix.cmake | 45 ++-------------------------------------------
+ 1 file changed, 2 insertions(+), 43 deletions(-)
+
+diff --git a/cmake/config-ix.cmake b/cmake/config-ix.cmake
+index 3c2251c..bc30c95 100644
+--- a/cmake/config-ix.cmake
++++ b/cmake/config-ix.cmake
+@@ -561,23 +561,7 @@ else()
+ endif()
+ 
+ set(LLVM_BINDINGS "")
+-if(WIN32)
+-  message(STATUS "Go bindings disabled.")
+-else()
+-  find_program(GO_EXECUTABLE NAMES go DOC "go executable")
+-  if(GO_EXECUTABLE STREQUAL "GO_EXECUTABLE-NOTFOUND")
+-    message(STATUS "Go bindings disabled.")
+-  else()
+-    execute_process(COMMAND ${GO_EXECUTABLE} run ${PROJECT_SOURCE_DIR}/bindings/go/conftest.go
+-                    RESULT_VARIABLE GO_CONFTEST)
+-    if(GO_CONFTEST STREQUAL "0")
+-      set(LLVM_BINDINGS "${LLVM_BINDINGS} go")
+-      message(STATUS "Go bindings enabled.")
+-    else()
+-      message(STATUS "Go bindings disabled, need at least Go 1.2.")
+-    endif()
+-  endif()
+-endif()
++message(STATUS "Go bindings disabled.")
+ 
+ find_program(GOLD_EXECUTABLE NAMES ${LLVM_DEFAULT_TARGET_TRIPLE}-ld.gold ld.gold ${LLVM_DEFAULT_TARGET_TRIPLE}-ld ld DOC "The gold linker")
+ set(LLVM_BINUTILS_INCDIR "" CACHE PATH
+@@ -602,32 +586,7 @@ if(CMAKE_HOST_APPLE AND APPLE)
+ endif()
+ 
+ # Keep the version requirements in sync with bindings/ocaml/README.txt.
+-include(FindOCaml)
+-include(AddOCaml)
+-if(WIN32)
+-  message(STATUS "OCaml bindings disabled.")
+-else()
+-  find_package(OCaml)
+-  if( NOT OCAML_FOUND )
+-    message(STATUS "OCaml bindings disabled.")
+-  else()
+-    if( OCAML_VERSION VERSION_LESS "4.00.0" )
+-      message(STATUS "OCaml bindings disabled, need OCaml >=4.00.0.")
+-    else()
+-      find_ocamlfind_package(ctypes VERSION 0.4 OPTIONAL)
+-      if( HAVE_OCAML_CTYPES )
+-        message(STATUS "OCaml bindings enabled.")
+-        find_ocamlfind_package(oUnit VERSION 2 OPTIONAL)
+-        set(LLVM_BINDINGS "${LLVM_BINDINGS} ocaml")
+-
+-        set(LLVM_OCAML_INSTALL_PATH "${OCAML_STDLIB_PATH}" CACHE STRING
+-            "Install directory for LLVM OCaml packages")
+-      else()
+-        message(STATUS "OCaml bindings disabled, need ctypes >=0.4.")
+-      endif()
+-    endif()
+-  endif()
+-endif()
++message(STATUS "OCaml bindings disabled.")
+ 
+ string(REPLACE " " ";" LLVM_BINDINGS_LIST "${LLVM_BINDINGS}")
+ 
+-- 
+2.10.0
+

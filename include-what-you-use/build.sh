@@ -53,25 +53,13 @@ _cmake_config_defaults=(
     # these, I'm not sure, could vary between projects?
     # or at least would benefit from
     # being overridable by conda_build_config.yaml
-    -DCMAKE_INSTALL_LIBDIR=lib
     -DBUILD_SHARED_LIBS=OFF
 )
 
-declare -a _cmake_config
+env
 
-_cmake_config+=(
-    -DGOLD_EXECUTABLE="${LD_GOLD}"
-
-    # needed for color output, a patch forces the use of libtinfo
-    -DLLVM_ENABLE_TERMINFO:BOOL=ON
-    -DLLVM_ENABLE_LIBEDIT:BOOL=ON
-
-    # Compiling/linking takes too much memory on my computer,
-    # limit parallelization so compilation works.
-    -DLLVM_PARALLEL_LINK_JOBS=1
-    -DLLVM_PARALLEL_COMPILE_JOBS=6
-)
-
-cmake -G Ninja "${_cmake_config_defaults[@]}" "${_cmake_config[@]}" ..
+cmake -G Ninja "${_cmake_config_defaults[@]}" ..
 
 ninja ${VERBOSE_NINJA--v} install
+
+readelf -d ${PREFIX}/bin/include-what-you-use | head -20

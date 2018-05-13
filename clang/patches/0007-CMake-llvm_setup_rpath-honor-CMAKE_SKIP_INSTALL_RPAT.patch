@@ -1,0 +1,29 @@
+From c1699a3667579f1e23ae48094b0cde79cfcbfc96 Mon Sep 17 00:00:00 2001
+From: Guillaume Papin <guillaume.papin@epitech.eu>
+Date: Sun, 13 May 2018 19:11:46 +0200
+Subject: [PATCH 7/7] CMake: llvm_setup_rpath: honor CMAKE_SKIP_INSTALL_RPATH
+
+Conda removes RPATH and sets its own,
+LLVM should respect CMAKE_SKIP_INSTALL_RPATH if we don't want to use it.
+---
+ cmake/modules/AddLLVM.cmake | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/cmake/modules/AddLLVM.cmake b/cmake/modules/AddLLVM.cmake
+index ceff051..6608f93 100644
+--- a/cmake/modules/AddLLVM.cmake
++++ b/cmake/modules/AddLLVM.cmake
+@@ -1571,6 +1571,10 @@ function(llvm_externalize_debuginfo name)
+ endfunction()
+ 
+ function(llvm_setup_rpath name)
++  if (CMAKE_SKIP_INSTALL_RPATH)
++    return()
++  endif()
++
+   if(CMAKE_INSTALL_RPATH)
+     return()
+   endif()
+-- 
+2.10.0
+

@@ -1,29 +1,33 @@
-{% set version="5.0.1" %}
-{% set iwyu_version="0.9" %}
+{% set version="6.0.0" %}
 
 package:
-  name: clang-suite
+  name: clang
   version: {{ version }}
 
 source:
   - url: http://releases.llvm.org/{{ version }}/llvm-{{ version }}.src.tar.xz
-    sha256: 5fa7489fc0225b11821cab0362f5813a05f2bcf2533e8a4ea9c9c860168807b0
+    sha256: 1ff53c915b4e761ef400b803f07261ade637b0c269d99569f18040f3dcee4408
+    patches:
+      - patches/0001-turn-off-libxml2-as-it-is-used-only-for-testing-or-w.patch
+      - patches/0002-disable-Ocaml-and-Go-bindings.patch
+      - patches/0003-replace-include-FindPythonInterp-by-find_package-Pyt.patch
+      - patches/0004-disable-git.patch
+      - patches/0005-force-tinfo.patch
+      - patches/0006-force-libedit.patch
+      - patches/0007-CMake-llvm_setup_rpath-honor-CMAKE_SKIP_INSTALL_RPAT.patch
   - url: http://releases.llvm.org/{{ version }}/cfe-{{ version }}.src.tar.xz
-    sha256: 135f6c9b0cd2da1aff2250e065946258eb699777888df39ca5a5b4fe5e23d0ff
+    sha256: e07d6dd8d9ef196cfc8e8bb131cbd6a2ed0b1caf1715f9d05b0f0eeaddb6df32
     folder: tools/clang
     patches:
-      - 0001-CMake-add-include-what-you-use-subdirectory-to-tools.patch
+      - patches/tools/clang/0001-turn-off-libxml2-as-it-is-used-only-for-testing-or-w.patch
   - url: http://releases.llvm.org/{{ version }}/clang-tools-extra-{{ version }}.src.tar.xz
-    sha256: 9aada1f9d673226846c3399d13fab6bba4bfd38bcfe8def5ee7b0ec24f8cd225
+    sha256: 053b424a4cd34c9335d8918734dd802a8da612d13a26bbb88fcdf524b2d989d2
     folder: tools/clang/tools/extra
-  - url: https://github.com/include-what-you-use/include-what-you-use/archive/clang_5.0.tar.gz
-    sha256: a9ec29f9a2127816facabe3fab1d72dc5b5326ebe5013f2223b56565f3783828
-    folder: tools/clang/tools/include-what-you-use
-    patches:
-      - 0002-CMake-remove-extra-dependencies-curses-backatrace-z-.patch
 
 build:
-  number: 2
+  number: 6
+  run_exports:
+    - {{ pin_subpackage('clang') }}
 
 requirements:
   build:
@@ -31,42 +35,22 @@ requirements:
     - {{ compiler('cxx') }}
     - cmake >=3.4.3
     - ninja
-    - python
+    # used for build, python 2 used because conda post-install compiles the python files,
+    # and not all of them are python 3 compatible
+    - python 2
     - pkg-config                # [unix]
   host:
     - libedit                   # [unix]
+    - ncurses                   # [unix]
 
-outputs:
-  - name: clang-format
-    files:
-      - bin/clang-format
-    requirements:
-      build:
-        - {{ compiler('c') }}
-        - {{ compiler('cxx') }}
-    test:
-      script: run_test_clang-format.sh
-  - name: clang-tidy
-    files:
-      - bin/clang-tidy
-    requirements:
-      build:
-        - {{ compiler('c') }}
-        - {{ compiler('cxx') }}
-    test:
-      script: run_test_clang-tidy.sh
-  - name: include-what-you-use
-    version: {{ iwyu_version }}
-    files:
-      - bin/fix_includes.py
-      - bin/include-what-you-use
-      - bin/iwyu_tool.py
-      - share/include-what-you-use/
-    requirements:
-      build:
-        - {{ compiler('c') }}
-        - {{ compiler('cxx') }}
-      run:
-        - python
-    test:
-      script: run_test_include-what-you-use.sh
+about:
+  home: https://clang.llvm.org/
+  doc_url: https://clang.llvm.org/docs/index.html
+  license: University of Illinois/NCSA Open Source License
+  license_family: BSD
+  license_file: LICENSE.TXT
+  summary: a C language family frontend for LLVM
+
+extra:
+  recipe-maintainers:
+    - Sarcasm
