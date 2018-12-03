@@ -1,5 +1,4 @@
-{% set version = "4.1.0" %}
-{% set sha256 = "9d49bf02ceb9d0eec51144b203b63b77e69d3798bb402fb82e7d0bdb06c79eeb" %}
+{% set version = "5.2.1" %}
 
 package:
   name: fmt
@@ -8,10 +7,10 @@ package:
 source:
   fn: fmt-{{ version }}.zip
   url: https://github.com/fmtlib/fmt/releases/download/{{ version }}/fmt-{{ version }}.zip
-  sha256: {{ sha256 }}
+  sha256: 43894ab8fe561fc9e523a8024efc23018431fa86b95d45b06dbe6ddb29ffb6cd
 
 build:
-  number: 0
+  number: 1
 
 requirements:
   build:

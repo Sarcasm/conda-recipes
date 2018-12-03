@@ -1,0 +1,46 @@
+From 69cce864b54a18180d32fb74137dba6f22ead116 Mon Sep 17 00:00:00 2001
+From: Guillaume Papin <guillaume.papin@epitech.eu>
+Date: Sat, 27 Oct 2018 12:41:47 +0200
+Subject: [PATCH] CMake: remove explicit addition of '-std=c++11' compile
+ option
+
+The conda toolchain contains '-std=c++17' in its CXXFLAGS.
+This means the command line was: g++ ... -std=c++17 ... -std=c++11 ...
+
+Also, even if the conda toolchain did not contain the '-std=c++XX' flag,
+we probably don't need -std=c++11,
+because the conda toolcain is usually quite recent (7.3.0).
+Since GCC version 6.1, the default standard is C++14,
+https://gcc.gnu.org/projects/cxx-status.html#cxx14.
+This means cpprestsdk should compile fine with the conda toolchain without
+explicitely setting a standard.
+
+It might be better to specify some sort of required standard via CMake
+compile features, but that's not how cpprestsdk does it for now.
+---
+ Release/CMakeLists.txt | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/Release/CMakeLists.txt b/Release/CMakeLists.txt
+index 3b99b85..9929f23 100644
+--- a/Release/CMakeLists.txt
++++ b/Release/CMakeLists.txt
+@@ -180,15 +180,12 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR IOS)
+     set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++11")
+   endif()
+ 
+-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fno-strict-aliasing")
+-
+ elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+   message("-- Setting gcc options")
+ 
+   set(WARNINGS -Wall -Wextra -Wunused-parameter -Wcast-align -Wcast-qual -Wconversion -Wformat=2 -Winit-self -Winvalid-pch -Wmissing-format-attribute -Wmissing-include-dirs -Wpacked -Wredundant-decls -Wunreachable-code -Wno-format-truncation)
+   set(LD_FLAGS "${LD_FLAGS} -Wl,-z,defs")
+ 
+-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fno-strict-aliasing")
+   if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.8)
+     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive -D_GLIBCXX_USE_SCHED_YIELD -D_GLIBCXX_USE_NANOSLEEP")
+   endif()
+-- 
+2.10.0
+

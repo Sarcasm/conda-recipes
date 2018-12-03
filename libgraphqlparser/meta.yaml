@@ -1,0 +1,45 @@
+{% set version = "0.7.0" %}
+
+package:
+  name: libgraphqlparser
+  version: {{ version }}
+
+source:
+  url: https://github.com/graphql/libgraphqlparser/archive/v{{ version }}.tar.gz
+  sha256: 63dae018f970dc2bdce431cbafbfa0bd3e6b10bba078bb997a3c1a40894aa35c
+  patches:
+    - 0001-CMake-remove-explicit-addition-of-std-gnu-11-compile.patch
+
+build:
+  number: 1
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+    - ninja
+  host:
+    - bison
+    - flex
+    - python 2
+
+test:
+  commands:
+    - test -d ${PREFIX}/include/graphqlparser               # [unix]
+    - test -f ${PREFIX}/lib/libgraphqlparser.so             # [linux]
+    - conda inspect linkages -p $PREFIX libgraphqlparser    # [unix]
+
+about:
+  home: https://github.com/graphql/libgraphqlparser
+  license: MIT
+  license_file: LICENSE
+  summary: A GraphQL query parser in C++ with C and C++ APIs
+  description: |
+    libgraphqlparser is a parser for GraphQL,
+    a query language created by Facebook for describing data requirements
+    on complex application data models, implemented in C++11.
+
+extra:
+  recipe-maintainers:
+    - Sarcasm

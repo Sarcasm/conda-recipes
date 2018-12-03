@@ -53,12 +53,17 @@ _cmake_config_defaults=(
     # these, I'm not sure, could vary between projects?
     # or at least would benefit from
     # being overridable by conda_build_config.yaml
-    -DBUILD_SHARED_LIBS=OFF
+    -DBUILD_SHARED_LIBS=ON
 )
 
-cmake -G Ninja "${_cmake_config_defaults[@]}" ..
+_cmake_config=(
+    -DBUILD_TESTS=OFF
+    -DUPDATE_SAMPLES=OFF
+)
+
+cmake -G Ninja "${_cmake_config_defaults[@]}" "${_cmake_config[@]}" ..
 
 # use ${VERBOSE_NINJA-} instead of just ${VERBOSE_NINJA},
 # which expands to VERBOSE_NINJA or the empty string if no set,
 # because script uses 'set -o nounset'
-ninja ${VERBOSE_NINJA-} install
+ninja ${VERBOSE_NINJA-} -j${CPU_COUNT} install

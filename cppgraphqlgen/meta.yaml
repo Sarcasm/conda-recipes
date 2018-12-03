@@ -1,0 +1,51 @@
+{% set version = "0.2" %}
+
+package:
+  name: cppgraphqlgen
+  version: {{ version }}
+
+source:
+  url: https://api.github.com/repos/Microsoft/cppgraphqlgen/tarball/e4dbc060d4a9f27afbdc1005e0ea304a692656b6
+  fn: cppgraphqlgen-e4dbc060d4a9f27afbdc1005e0ea304a692656b6.tar.gz
+  sha256: e07e5fc13e94012727a7adfd4b7eda541445fc1b6c00ab192ffade8bcf27a1f9
+  patches:
+  - 0001-CMake-remove-explicit-addition-of-std-c-11-compile-o.patch
+  - 0002-fix-graphqlservice-include-directories.patch
+  - 0003-fix-BUILD_INTERFACE-in-target_link_libraries.patch
+  - 0004-fix-install-rule-for-generated-IntrospectionSchema.h.patch
+  - 0005-schemagen-fully-qualify-include-to-graphqlservice-Gr.patch
+  - 0006-fix-schemagen-to-use-graphqlservice-find_dependency-.patch
+
+build:
+  number: 1
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+    - ninja
+  host:
+    - libgraphqlparser
+    - cpprestsdk
+  run:
+    - cpprestsdk
+    - libgraphqlparser
+
+# test:
+#   commands:
+#     - test -d ${PREFIX}/include/graphqlparser               # [unix]
+#     - test -f ${PREFIX}/lib/libgraphqlparser.so             # [linux]
+#     - conda inspect linkages -p $PREFIX libgraphqlparser    # [unix]
+
+about:
+  home: https://github.com/Microsoft/cppgraphqlgen
+  license: MIT
+  license_file: LICENSE
+  summary: C++ GraphQL schema service generator
+  description: |
+    C++ GraphQL schema service generator
+
+extra:
+  recipe-maintainers:
+    - Sarcasm

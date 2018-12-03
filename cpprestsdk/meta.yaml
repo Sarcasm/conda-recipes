@@ -1,0 +1,53 @@
+{% set version = "2.10.6" %}
+
+package:
+  name: cpprestsdk
+  version: {{ version }}
+
+source:
+  url: https://github.com/Microsoft/cpprestsdk/archive/v{{ version }}.tar.gz
+  sha256: 5fecccc779b077f18acf0f7601b19b39c3da963498ed5b10bb2700dccfe66c5a
+  patches:
+    - 0001-CMake-remove-explicit-addition-of-std-c-11-compile-o.patch
+
+build:
+  number: 1
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+    - ninja
+    - pkgconfig
+    - bison
+    - flex
+    - python 2
+  host:
+    - openssl
+    - zlib
+    - libboost
+  run:
+    - libboost # needed because the libboost package doesn't provide a run_export
+    # This should have been taken care of by run_exports
+    - openssl
+
+test:
+  commands:
+    - test -d ${PREFIX}/include/cpprest            # [unix]
+    - test -f ${PREFIX}/lib/libcpprest.so          # [linux]
+    - conda inspect linkages -p $PREFIX cpprestsdk # [unix]
+
+about:
+  home: https://github.com/graphql/cpprestsdk
+  license: MIT
+  license_file: license.txt
+  summary: A GraphQL query parser in C++ with C and C++ APIs
+  description: |
+    cpprestsdk is a parser for GraphQL,
+    a query language created by Facebook for describing data requirements
+    on complex application data models, implemented in C++11.
+
+extra:
+  recipe-maintainers:
+    - Sarcasm

@@ -1,6 +1,10 @@
 ninja:
   - 1.8.2
 
+cmake:
+  # need recent CMake so FindBoost.cmake supports recent Boost version
+  - 3.12
+
 # Log everything by default,
 # but allow to disable without changing the recipe,
 # if large log sizes is an issue on CI.

@@ -48,7 +48,7 @@ _cmake_config_defaults=(
     -DCMAKE_BUILD_TYPE=Release
 
     # disabled because conda removes it and replaces it with patchelf
-    -DCMAKE_SKIP_INSTALL_RPATH=OFF
+    -DCMAKE_SKIP_INSTALL_RPATH=ON
 
     # these, I'm not sure, could vary between projects?
     # or at least would benefit from
@@ -70,6 +70,8 @@ _cmake_config+=(
     # limit parallelization so compilation works.
     -DLLVM_PARALLEL_LINK_JOBS=1
     -DLLVM_PARALLEL_COMPILE_JOBS=6
+
+    -DLLVM_LINK_LLVM_DYLIB=ON
 )
 
 cmake -G Ninja "${_cmake_config_defaults[@]}" "${_cmake_config[@]}" ..

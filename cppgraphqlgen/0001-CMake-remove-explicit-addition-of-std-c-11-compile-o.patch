@@ -1,0 +1,31 @@
+From e7f42f0f7fb09b01fd04c077c6b429f4ed24cf98 Mon Sep 17 00:00:00 2001
+From: Guillaume Papin <guillaume.papin@epitech.eu>
+Date: Thu, 1 Nov 2018 20:14:02 +0100
+Subject: [PATCH 1/6] CMake: remove explicit addition of '-std=c++11' compile
+ option
+
+The conda toolchain contains '-std=c++17' in its CXXFLAGS.
+This means the command line was: g++ ... -std=c++17 ... -std=c++11 ...
+---
+ CMakeLists.txt | 5 -----
+ 1 file changed, 5 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 24d9d97..424ac25 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -33,11 +33,6 @@ add_custom_command(
+   COMMENT "Generating IntrospectionSchema files"
+ )
+ 
+-if(UNIX)
+-  target_compile_options(graphqlservice PRIVATE -std=c++11)
+-  target_compile_options(schemagen PRIVATE -std=c++11)
+-endif()
+-
+ option(BUILD_TESTS "Build the tests and sample schema library." ON)
+ option(UPDATE_SAMPLES "Regenerate the sample schema sources whether or not we're building the tests and the sample library." ON)
+ 
+-- 
+2.10.0
+

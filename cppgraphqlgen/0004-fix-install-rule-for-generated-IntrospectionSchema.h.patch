@@ -1,0 +1,26 @@
+From 2cbd7854f6b8fdfec638d82ff4cc6c4696bdae22 Mon Sep 17 00:00:00 2001
+From: Guillaume Papin <guillaume.papin@epitech.eu>
+Date: Fri, 2 Nov 2018 23:04:59 +0100
+Subject: [PATCH 4/6] fix install rule for generated IntrospectionSchema.h
+
+This fixes the install step for out of source builds.
+---
+ CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 7423b92..ab8a1b5 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -102,7 +102,7 @@ install(TARGETS graphqlservice schemagen
+   ARCHIVE DESTINATION lib
+   LIBRARY DESTINATION lib)
+ 
+-install(FILES GraphQLService.h Introspection.h IntrospectionSchema.h
++install(FILES GraphQLService.h Introspection.h ${CMAKE_BINARY_DIR}/IntrospectionSchema.h
+   DESTINATION include/graphqlservice)
+ 
+ if(WIN32)
+-- 
+2.10.0
+
