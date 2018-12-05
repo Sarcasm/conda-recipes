@@ -1,20 +1,14 @@
-{% set version = "0.2" %}
+{% set version = "0.6" %}
 
 package:
   name: cppgraphqlgen
   version: {{ version }}
 
 source:
-  url: https://api.github.com/repos/Microsoft/cppgraphqlgen/tarball/e4dbc060d4a9f27afbdc1005e0ea304a692656b6
-  fn: cppgraphqlgen-e4dbc060d4a9f27afbdc1005e0ea304a692656b6.tar.gz
-  sha256: e07e5fc13e94012727a7adfd4b7eda541445fc1b6c00ab192ffade8bcf27a1f9
-  patches:
+  url: https://github.com/Microsoft/cppgraphqlgen/archive/v{{ version }}.tar.gz
+  sha256: 21c7b43e28d0f95fb4595aa9d195b4898689060ab89ebb3abfd6b0c52139697f
+patches:
   - 0001-CMake-remove-explicit-addition-of-std-c-11-compile-o.patch
-  - 0002-fix-graphqlservice-include-directories.patch
-  - 0003-fix-BUILD_INTERFACE-in-target_link_libraries.patch
-  - 0004-fix-install-rule-for-generated-IntrospectionSchema.h.patch
-  - 0005-schemagen-fully-qualify-include-to-graphqlservice-Gr.patch
-  - 0006-fix-schemagen-to-use-graphqlservice-find_dependency-.patch
 
 build:
   number: 1
@@ -26,11 +20,11 @@ requirements:
     - cmake
     - ninja
   host:
-    - libgraphqlparser
-    - cpprestsdk
+    - pegtl
+    - rapidjson
   run:
-    - cpprestsdk
-    - libgraphqlparser
+    - pegtl
+    - rapidjson
 
 # test:
 #   commands:

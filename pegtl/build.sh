@@ -55,11 +55,12 @@ _cmake_config_defaults=(
     # or at least would benefit from
     # being overridable by conda_build_config.yaml
     -DBUILD_SHARED_LIBS=ON
+    -DCMAKE_INSTALL_LIBDIR=lib
 )
 
 _cmake_config=(
-    -DBUILD_TESTS=OFF
-    -DUPDATE_SAMPLES=OFF
+    -DPEGTL_BUILD_TESTS=OFF
+    -DPEGTL_BUILD_EXAMPLES=OFF
 )
 
 cmake -G Ninja "${_cmake_config_defaults[@]}" "${_cmake_config[@]}" ..

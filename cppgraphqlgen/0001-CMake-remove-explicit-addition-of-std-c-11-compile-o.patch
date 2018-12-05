@@ -1,22 +1,22 @@
-From e7f42f0f7fb09b01fd04c077c6b429f4ed24cf98 Mon Sep 17 00:00:00 2001
+From 005e256846dd86fb90f5a09bd96a5e0ca461daaf Mon Sep 17 00:00:00 2001
 From: Guillaume Papin <guillaume.papin@epitech.eu>
 Date: Thu, 1 Nov 2018 20:14:02 +0100
-Subject: [PATCH 1/6] CMake: remove explicit addition of '-std=c++11' compile
+Subject: [PATCH 1/2] CMake: remove explicit addition of '-std=c++11' compile
  option
 
 The conda toolchain contains '-std=c++17' in its CXXFLAGS.
 This means the command line was: g++ ... -std=c++17 ... -std=c++11 ...
 ---
- CMakeLists.txt | 5 -----
- 1 file changed, 5 deletions(-)
+ CMakeLists.txt | 11 -----------
+ 1 file changed, 11 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 24d9d97..424ac25 100644
+index fe1b72a..bce60be 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -33,11 +33,6 @@ add_custom_command(
-   COMMENT "Generating IntrospectionSchema files"
- )
+@@ -35,11 +35,6 @@ target_include_directories(graphqlservice SYSTEM PUBLIC ${RAPIDJSON_INCLUDE_DIRS
+ target_include_directories(graphqlservice SYSTEM INTERFACE $<INSTALL_INTERFACE:include>)
+ target_include_directories(graphqlservice PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR})
  
 -if(UNIX)
 -  target_compile_options(graphqlservice PRIVATE -std=c++11)
@@ -26,6 +26,19 @@ index 24d9d97..424ac25 100644
  option(BUILD_TESTS "Build the tests and sample schema library." ON)
  option(UPDATE_SAMPLES "Regenerate the sample schema sources whether or not we're building the tests and the sample library." ON)
  
+@@ -90,12 +85,6 @@ if(BUILD_TESTS OR UPDATE_SAMPLES)
+     add_test(NAME PegtlCase
+       COMMAND tests --gtest_filter=PegtlCase.*
+       WORKING_DIRECTORY $<TARGET_FILE_DIR:tests>)
+-
+-    if(UNIX)
+-      target_compile_options(todaygraphql PRIVATE -std=c++11)
+-      target_compile_options(test_today PRIVATE -std=c++11)
+-      target_compile_options(tests PRIVATE -std=c++11)
+-    endif()
+   endif()
+ 
+   if(UPDATE_SAMPLES)
 -- 
 2.10.0
 
