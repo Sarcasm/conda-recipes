@@ -1,33 +1,47 @@
 {% set version="6.0.0" %}
 
+# TODO: package is huge, 400Mo:
+# - build one libLLVM.so / .a
+# - do a split package
+# - LLVM
+# - clang
+# - clang-format
+# - clang-tidy
+# - clang-doc
+# - clangd
+# - clang-builtin-headers/clang-runtime/clang-tool-runtime/clang-binary-runtime
+# - ...
+# TODO: check openblas feedstock page:
+# openblas-feedstock/recipe/meta.yaml
+# package name is openblas_multipkg
 package:
-  name: clang
+  name: llvm-toolchain
   version: {{ version }}
 
 source:
-  - url: http://releases.llvm.org/{{ version }}/llvm-{{ version }}.src.tar.xz
-    sha256: 1ff53c915b4e761ef400b803f07261ade637b0c269d99569f18040f3dcee4408
-    patches:
-      - patches/0001-turn-off-libxml2-as-it-is-used-only-for-testing-or-w.patch
-      - patches/0002-disable-Ocaml-and-Go-bindings.patch
-      - patches/0003-replace-include-FindPythonInterp-by-find_package-Pyt.patch
-      - patches/0004-disable-git.patch
-      - patches/0005-force-tinfo.patch
-      - patches/0006-force-libedit.patch
-      - patches/0007-CMake-llvm_setup_rpath-honor-CMAKE_SKIP_INSTALL_RPAT.patch
-  - url: http://releases.llvm.org/{{ version }}/cfe-{{ version }}.src.tar.xz
-    sha256: e07d6dd8d9ef196cfc8e8bb131cbd6a2ed0b1caf1715f9d05b0f0eeaddb6df32
-    folder: tools/clang
-    patches:
-      - patches/tools/clang/0001-turn-off-libxml2-as-it-is-used-only-for-testing-or-w.patch
+  # - url: http://releases.llvm.org/{{ version }}/llvm-{{ version }}.src.tar.xz
+  #   sha256: 1ff53c915b4e761ef400b803f07261ade637b0c269d99569f18040f3dcee4408
+  #   patches:
+  #     - patches/0001-turn-off-libxml2-as-it-is-used-only-for-testing-or-w.patch
+  #     - patches/0002-disable-Ocaml-and-Go-bindings.patch
+  #     - patches/0003-replace-include-FindPythonInterp-by-find_package-Pyt.patch
+  #     - patches/0004-disable-git.patch
+  #     - patches/0005-force-tinfo.patch
+  #     - patches/0006-force-libedit.patch
+  #     - patches/0007-CMake-llvm_setup_rpath-honor-CMAKE_SKIP_INSTALL_RPAT.patch
+  # - url: http://releases.llvm.org/{{ version }}/cfe-{{ version }}.src.tar.xz
+  #   sha256: e07d6dd8d9ef196cfc8e8bb131cbd6a2ed0b1caf1715f9d05b0f0eeaddb6df32
+  #   folder: tools/clang
+  #   patches:
+  #     - patches/tools/clang/0001-turn-off-libxml2-as-it-is-used-only-for-testing-or-w.patch
   - url: http://releases.llvm.org/{{ version }}/clang-tools-extra-{{ version }}.src.tar.xz
     sha256: 053b424a4cd34c9335d8918734dd802a8da612d13a26bbb88fcdf524b2d989d2
-    folder: tools/clang/tools/extra
+    # folder: tools/clang/tools/extra
 
 build:
   number: 6
-  run_exports:
-    - {{ pin_subpackage('clang') }}
+  # run_exports:
+  #   - {{ pin_subpackage('clang') }}
 
 requirements:
   build:
@@ -42,6 +56,51 @@ requirements:
   host:
     - libedit                   # [unix]
     - ncurses                   # [unix]
+
+
+# libLLVM.so
+# libLLVM-devel (.a, headers)
+# clang
+# clang-tidy
+# clang-resource directory
+
+outputs:
+  - name: libllvm
+    build:
+      run_exports:
+        - {{ pin_subpackage('libllvm', exact=True) }}
+    requirements:
+      build:
+        - {{ compiler('c') }}
+        - {{ compiler('cxx') }}
+      host:
+        - libedit               # [unix]
+        - ncurses               # [unix]
+    files:
+      # FIXME: lib/libLLVM.so only for devel package?
+      - lib/libLLVM*.so        # [linux]
+  - name: clang-format
+    requirements:
+      build:
+        - {{ compiler('c') }}
+        - {{ compiler('cxx') }}
+      host:
+        - {{ pin_subpackage('libllvm', exact=True) }}
+      run:
+        - {{ pin_subpackage('libllvm', exact=True) }}
+    files:
+      - bin/clang-format
+    test:
+      script: run_test_clang-format.sh
+  # - name: clang-tidy            # FIXME: tidy does not support colors
+  #   files:
+  #     - bin/clang-tidy
+  #   requirements:
+  #     build:
+  #       - {{ compiler('c') }}
+  #       - {{ compiler('cxx') }}
+  #   test:
+  #     script: run_test_clang-tidy.sh
 
 about:
   home: https://clang.llvm.org/
