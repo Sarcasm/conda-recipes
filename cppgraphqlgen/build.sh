@@ -38,6 +38,7 @@ _cmake_config_defaults=(
     -DCMAKE_C_FLAGS="$(eval echo ${CFLAGS})"
     -DCMAKE_CXX_FLAGS="$(eval echo ${CXXFLAGS})"
     -DCMAKE_CXX_STANDARD=17
+    -DCMAKE_CXX_EXTENSIONS=OFF
 
     # other standard variables
     # PREFIX: 'host' requirements prefix, e.g. libncurses needed for build
@@ -58,7 +59,7 @@ _cmake_config_defaults=(
 )
 
 _cmake_config=(
-    -DBUILD_TESTS=OFF
+    -DBUILD_TESTS=ON
     -DUPDATE_SAMPLES=OFF
 )
 
@@ -67,4 +68,6 @@ cmake -G Ninja "${_cmake_config_defaults[@]}" "${_cmake_config[@]}" ..
 # use ${VERBOSE_NINJA-} instead of just ${VERBOSE_NINJA},
 # which expands to VERBOSE_NINJA or the empty string if no set,
 # because script uses 'set -o nounset'
+ninja ${VERBOSE_NINJA-} -j${CPU_COUNT}
+ctest --output-on-failure -j${CPU_COUNT}
 ninja ${VERBOSE_NINJA-} -j${CPU_COUNT} install

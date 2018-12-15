@@ -5,13 +5,16 @@ package:
   version: {{ version }}
 
 source:
-  url: https://github.com/Microsoft/cppgraphqlgen/archive/v{{ version }}.tar.gz
-  sha256: 21c7b43e28d0f95fb4595aa9d195b4898689060ab89ebb3abfd6b0c52139697f
-patches:
-  - 0001-CMake-remove-explicit-addition-of-std-c-11-compile-o.patch
+  # url: https://github.com/Microsoft/cppgraphqlgen/archive/v{{ version }}.tar.gz
+  url: https://github.com/Microsoft/cppgraphqlgen/archive/faddbd0be73a73b9fcd23ef3b0f20fce33bde8ff.zip
+  sha256: 5f8e135be964a88fb90124ec88df36a1a37048ebb78c144b1951334463616d25
+  patches:
+    - 0001-move-public-headers-to-graphqlservice-directory.patch
+    - 0002-CMake-use-Threads-Threads-instead-of-CMAKE_THREAD_LI.patch
+    - 0003-CMake-replace-CXX_STANDARD-by-target_compile_feature.patch
 
 build:
-  number: 1
+  number: 2
 
 requirements:
   build:
@@ -21,10 +24,11 @@ requirements:
     - ninja
   host:
     - pegtl
+    # tests dependencies
     - rapidjson
+    - gtest
   run:
     - pegtl
-    - rapidjson
 
 # test:
 #   commands:
