@@ -47,6 +47,7 @@ _cmake_config_defaults=(
     # BUILD_PREFIX: same as PREFIX?
     -DCMAKE_PREFIX_PATH="${PREFIX}"
     -DCMAKE_INSTALL_PREFIX="${PREFIX}"
+    -DCMAKE_INSTALL_LIBDIR=lib
     -DCMAKE_BUILD_TYPE=Release
 
     # disabled because conda removes it and replaces it with patchelf
