@@ -1,0 +1,41 @@
+{% set version = "0.7.0" %}
+
+package:
+  name: capnproto
+  version: {{ version }}
+
+source:
+  url: https://github.com/capnproto/capnproto/archive/v{{ version }}.tar.gz
+  sha256: 76c7114a3d142ad08b7208b3964a26e72a6320ee81331d3f0b87569fc9c47a28
+
+build:
+  number: 3
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+    - ninja
+
+test:
+  commands:
+    - test -d ${PREFIX}/include/capnp             # [unix]
+    - test -d ${PREFIX}/include/kj                # [unix]
+    - conda inspect linkages -p $PREFIX capnproto # [unix]
+
+about:
+  home: https://github.com/capnproto/capnproto
+  license: MIT
+  license_file: LICENSE
+  summary: "Cap'n Proto serialization/RPC system - core tools and C++ library"
+  description: |
+    Cap'n Proto is an insanely fast data interchange format
+    and capability-based RPC system.
+    Think JSON, except binary. Or think Protocol Buffers, except faster.
+    In fact, in benchmarks,
+    Cap'n Proto is INFINITY TIMES faster than Protocol Buffers.
+
+extra:
+  recipe-maintainers:
+    - Sarcasm
